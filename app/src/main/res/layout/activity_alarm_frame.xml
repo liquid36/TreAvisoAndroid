@@ -1,0 +1,126 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    android:background="#ffeeeeee"
+    tools:context="com.samsoft.treaviso.app.AlarmFrame">
+
+
+    <ScrollView
+        android:id="@+id/scrollableContents"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:measureAllChildren="false">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/ListAlarm"
+            android:showDividers="none"
+            android:divider="#ee121c">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Nombre"
+                android:textColor="#000"
+                android:layout_marginLeft="15dp" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtName"
+                android:autoText="false" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Distancia"
+                android:textColor="#000"
+                android:layout_marginLeft="15dp" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtMetros"
+                android:inputType="number"
+                android:autoText="false"
+                android:hint="Metros" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Latitud"
+                android:textColor="#000"
+                android:visibility="gone" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtLat"
+                android:inputType="number"
+                android:digits="0123456789.-"
+                android:autoText="false"
+                android:visibility="gone" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Longitud"
+                android:textColor="#000"
+                android:visibility="gone" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtLong"
+                android:inputType="number"
+                android:digits="0123456789.-"
+                android:autoText="false"
+                android:visibility="gone" />
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Path"
+                android:textColor="#000"
+                android:layout_marginLeft="15dp" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtPath"
+                android:autoText="false" />
+
+            <Button
+                android:layout_width="200dp"
+                android:layout_height="45dp"
+                android:text="Buscar Posicion"
+                android:id="@+id/button"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/custon_button"
+                android:layout_marginLeft="10dp"
+                android:onClick="startMap"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp" />
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+</LinearLayout>

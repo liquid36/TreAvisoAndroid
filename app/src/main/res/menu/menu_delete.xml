@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.samsoft.treaviso.app.MainActivity" >
+
+    <item
+        android:id="@+id/act_do"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_done"
+        android:title="Aceptar"/>
+
+    <item
+        android:id="@+id/act_back"
+        android:orderInCategory="200"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_remove"
+        android:title="Cancelar"/>
+
+</menu>

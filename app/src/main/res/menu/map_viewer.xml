@@ -1,0 +1,32 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.samsoft.treaviso.app.MapViewer" >
+
+    <item
+        android:id="@+id/act_search"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom|collapseActionView"
+        android:icon="@drawable/ic_action_search"
+        android:title="Buscar"
+        app:actionViewClass="android.support.v7.widget.SearchView"/>
+
+    <item
+        android:id="@+id/act_do"
+        android:orderInCategory="200"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_done"
+        android:title="Aceptar"/>
+
+
+
+    <item
+        android:id="@+id/act_back"
+        android:orderInCategory="300"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_remove"
+        android:title="Cancelar"/>
+
+
+
+</menu>
