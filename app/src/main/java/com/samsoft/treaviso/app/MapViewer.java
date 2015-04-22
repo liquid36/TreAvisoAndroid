@@ -29,6 +29,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;
+import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.util.ResourceProxyImpl;
 import org.osmdroid.views.MapController;
@@ -69,14 +70,22 @@ public class MapViewer extends ActionBarActivity {
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_frame);
+
+
         myLocation = new GeoPoint(-32.948081,-60.694156);
         movl = new MapOverlay(this,new MarkerListener());
         movl.addItem(new OverlayItem("MY", "MY", myLocation));
 
-        myOpenMapView = (MapView)findViewById(R.id.openmapview);
+        myOpenMapView = (MapView) findViewById(R.id.openmapview);
         myOpenMapView.setBuiltInZoomControls(true);
         myOpenMapView.setMultiTouchControls(true);
-        myOpenMapView.getOverlays().add(movl);
+        //myOpenMapView.getOverlays().add(movl);
+
+        Marker startMarker = new Marker(myOpenMapView);
+        startMarker.setPosition(new GeoPoint(-30.948081,-60.694156));
+        startMarker.setDraggable(true);
+        startMarker.setIcon(getResources().getDrawable(R.drawable.ic_marker_red));
+        myOpenMapView.getOverlays().add(startMarker);
 
         mapController = myOpenMapView.getController();
         mapController.setZoom(12);
@@ -141,11 +150,14 @@ public class MapViewer extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void makeToast(String s) {
+        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+    }
 
     public class MarkerListener implements   ItemizedIconOverlay.OnItemGestureListener <OverlayItem> {
         @Override
         public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-            return true;
+            makeToast("hice click"); return true;
         }
 
         @Override
@@ -157,16 +169,15 @@ public class MapViewer extends ActionBarActivity {
     public class MapOverlay extends ItemizedOverlayWithFocus <OverlayItem> {
         private ItemizedOverlayWithFocus<OverlayItem> anotherItemizedIconOverlay = null;
 
-        public MapOverlay(Context ctx,MarkerListener m) {super(ctx, new ArrayList<OverlayItem>(), m);}
+        public MapOverlay(Context ctx,MarkerListener m) {super(ctx, new ArrayList<OverlayItem>(), m); }
 
         @Override
         public void draw(Canvas canvas, MapView mapview, boolean arg2)
         {
             //super.draw(canvas, mapview, arg2);
             if (this.size() > 0) {
-
                 for (int i = 0; i < this.size(); i++) {
-                    GeoPoint in = getItem(i).getPoint();
+                    IGeoPoint in = getItem(i).getPoint();
                     Point out = new Point();
                     mapview.getProjection().toPixels(in, out);
                     Bitmap bm;
@@ -188,6 +199,10 @@ public class MapViewer extends ActionBarActivity {
                 }
             }
         }
+
+
+        @Override
+        public boolean onTouchEvent(MotionEvent e, MapView mapView) {return true; }
 
         @Override
         public boolean onSingleTapUp(MotionEvent e, MapView mapView) {

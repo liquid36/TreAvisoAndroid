@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="osmdroid-android-4.2">
+  <library name="osmbonuspack_v5.1">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/app/libs/osmdroid-android-4.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/app/libs/osmbonuspack_v5.1.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
