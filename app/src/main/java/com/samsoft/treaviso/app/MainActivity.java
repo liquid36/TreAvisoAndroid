@@ -246,6 +246,7 @@ public class MainActivity extends ActionBarActivity {
                 startClick();
                 return true;
             case R.id.action_settings :
+                startActivity(new Intent(this,MapActivity.class));
                 return true;
             case R.id.act_del:
                 menuMode = true;
