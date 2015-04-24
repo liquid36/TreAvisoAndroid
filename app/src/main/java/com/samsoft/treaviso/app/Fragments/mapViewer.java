@@ -2,15 +2,24 @@ package com.samsoft.treaviso.app.Fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.samsoft.treaviso.app.Objects.GeoSearch;
+import com.samsoft.treaviso.app.Objects.MarkerWithRadius;
 import com.samsoft.treaviso.app.R;
 
 import org.osmdroid.api.IGeoPoint;
@@ -24,17 +33,28 @@ import org.osmdroid.views.MapView;
 import java.util.List;
 
 
-public class mapViewer extends Fragment implements MapEventsReceiver {
+public class mapViewer extends Fragment implements MapEventsReceiver , LocationListener , GeoSearch.onSearchListener {
+    private static final String MYPOSITION_LAT_ID = "MYPOSITION_LAT";
+    private static final String MYPOSITION_LNG_ID = "MYPOSITION_LNG";
+    private static final String CLICKPOSITION_LAT_ID = "CLICKPOSITION_LAT";
+    private static final String CLICKPOSITION_LNG_ID = "CLICKPOSITION_LNG";
+    private static final String CENTER_LAT_ID = "CENTER_LAT";
+    private static final String CENTER_LNG_ID = "CENTER_LNG";
+    private static final String RADIUS_ID = "RADIUS";
+    private static final String ZOOM_ID = "ZOOM";
+
+    private MenuItem searchMenuItem;
     private Activity activity;
-    private static final String ARG_PARAM1 = "param1";
-    private String mParam1;
     private MapView map;
     private IMapController mapCtl;
-    private OnFragmentInteractionListener mListener;
+
+    protected MarkerWithRadius mMarker;
+    protected Marker mPosition;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -43,40 +63,122 @@ public class mapViewer extends Fragment implements MapEventsReceiver {
         map = (MapView) v.findViewById(R.id.openmapview);
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
-        mapCtl = map.getController();
-        mapCtl.setCenter(getLastLocation());
-        mapCtl.setZoom(12);
-
         MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(getActivity().getApplicationContext(), this);
         map.getOverlays().add(0, mapEventsOverlay);
 
-        return v;
-    }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+        // Creo el market con la position actual
+        GeoPoint p = getLastLocation();
+        Integer zoom = 13;
+        mPosition = new Marker(map);
+        mPosition.setPosition(getLastLocation());
+        mPosition.setDraggable(false);
+        mPosition.setIcon(getResources().getDrawable(R.drawable.ic_marker_blue));
+        map.getOverlays().add(mPosition);
+        mMarker = null;
+
+
+        // Lectura de viejas condiciones
+        if (savedInstanceState == null) requestPosition();
+        else {
+            mPosition.setPosition(new GeoPoint(savedInstanceState.getDouble(MYPOSITION_LAT_ID),savedInstanceState.getDouble(MYPOSITION_LNG_ID)));
+            if (savedInstanceState.containsKey(CLICKPOSITION_LAT_ID))
+            {
+                mMarker = new MarkerWithRadius(map);
+                mMarker.setPosition(new GeoPoint(savedInstanceState.getDouble(CLICKPOSITION_LAT_ID),savedInstanceState.getDouble(CLICKPOSITION_LNG_ID)));
+                mMarker.setDraggable(true);
+                mMarker.setIcon(getResources().getDrawable(R.drawable.ic_marker_red));
+                map.getOverlays().add(mMarker);
+            }
+            p = new GeoPoint(savedInstanceState.getDouble(CENTER_LAT_ID),savedInstanceState.getDouble(CENTER_LNG_ID));
+            zoom = savedInstanceState.getInt(ZOOM_ID);
         }
+
+        mapCtl = map.getController();
+        mapCtl.setCenter(p);
+        mapCtl.setZoom(zoom);
+        return v;
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         this.activity = activity;
-        /*try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }*/
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.map_viewer, menu);
+        searchMenuItem = menu.findItem(R.id.act_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                GeoSearch t = new GeoSearch();
+                t.setOnSearchListener(mapViewer.this);
+                t.execute(s);
+                if (android.os.Build.VERSION.SDK_INT >= 14) searchMenuItem.collapseActionView();
+                else MenuItemCompat.collapseActionView(searchMenuItem);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public void onSearchEnd(GeoPoint p)
+    {
+        mapCtl.setCenter(p);
+        mapCtl.setZoom(14);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle item selection
+        switch (item.getItemId()) {
+            case R.id.act_search:
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mMarker != null) {
+            outState.putDouble(CLICKPOSITION_LAT_ID, mMarker.getPosition().getLatitude());
+            outState.putDouble(CLICKPOSITION_LNG_ID, mMarker.getPosition().getLongitude());
+            outState.putInt(RADIUS_ID,mMarker.getRadius());
+        }
+        outState.putDouble(MYPOSITION_LAT_ID, mPosition.getPosition().getLatitude());
+        outState.putDouble(MYPOSITION_LNG_ID, mPosition.getPosition().getLongitude());
+        outState.putDouble(CENTER_LAT_ID, map.getMapCenter().getLatitude());
+        outState.putDouble(CENTER_LNG_ID, map.getMapCenter().getLongitude());
+        outState.putInt(ZOOM_ID,map.getZoomLevel());
+    }
+
+    public void requestPosition()
+    {
+        Criteria criteria = new Criteria();
+        criteria.setAltitudeRequired(false);
+        criteria.setBearingRequired(false);
+        criteria.setSpeedRequired(false);
+        criteria.setCostAllowed(true);
+        LocationManager lm = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+        lm.requestSingleUpdate(criteria, this, null);
+    }
 
     public GeoPoint getLastLocation()
     {
@@ -107,11 +209,15 @@ public class mapViewer extends Fragment implements MapEventsReceiver {
      */
 
     @Override public boolean singleTapConfirmedHelper(GeoPoint p) {
-        Marker startMarker = new Marker(map);
-        startMarker.setPosition(p);
-        startMarker.setDraggable(true);
-        startMarker.setIcon(getResources().getDrawable(R.drawable.ic_marker_red));
-        map.getOverlays().add(startMarker);
+        if (mMarker == null) {
+            mMarker = new MarkerWithRadius(map);
+            mMarker.setPosition(p);
+            mMarker.setDraggable(true);
+            mMarker.setIcon(getResources().getDrawable(R.drawable.ic_marker_red));
+            map.getOverlays().add(mMarker);
+        } else {
+            mMarker.setPosition(p);
+        }
         map.invalidate();
         return false;
     }
@@ -121,12 +227,29 @@ public class mapViewer extends Fragment implements MapEventsReceiver {
     }
 
     /*
-        INTERFACE PARA LA ACTIVITY
+        LocationListener
 
      */
 
-    public interface OnFragmentInteractionListener {
-        public void onFragmentInteraction(Uri uri);
+    @Override
+    public void onLocationChanged(Location l) {
+        mPosition.setPosition(new GeoPoint(l));
+        map.invalidate();
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        // called when the GPS provider is turned off (user turning off the GPS on the phone)
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        // called when the GPS provider is turned on (user turning on the GPS on the phone)
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        // called when the status of the GPS provider changes
     }
 
 }

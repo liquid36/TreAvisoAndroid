@@ -108,8 +108,6 @@ public class MapViewer extends ActionBarActivity {
     private MenuItem searchMenuItem;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.map_viewer, menu);
         searchMenuItem = menu.findItem(R.id.act_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
