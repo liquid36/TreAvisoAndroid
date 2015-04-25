@@ -2,6 +2,7 @@ package com.samsoft.treaviso.app;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -17,35 +18,36 @@ import android.widget.TextView;
 
 import com.samsoft.treaviso.app.Fragments.mapViewer;
 import com.samsoft.treaviso.app.Objects.LocationMonitor;
+import com.samsoft.treaviso.app.Objects.settingRep;
 
 
 public class MapActivity extends ActionBarActivity {
-    protected static final String RUNNING_ID = "RUNNING";
+    public static final String RUNNING_ID = "RUNNING";
     private mapViewer mapF;
     private boolean mIsRunning = false;
     private static LocationMonitor lm = new LocationMonitor();
     private TextView mtxt;
+    private settingRep settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         mtxt = (TextView) findViewById(R.id.textView);
-
+        settings = new settingRep(getApplicationContext());
         boolean hayDetalle =  (getSupportFragmentManager().findFragmentById(R.id.fragment) != null);
         if (hayDetalle) mapF = ((mapViewer)getSupportFragmentManager().findFragmentById(R.id.fragment));
 
-        if (savedInstanceState != null) {
-            mIsRunning = savedInstanceState.getBoolean(RUNNING_ID);
-        }
-        if (mIsRunning) mtxt.setText(R.string.stop_text);
-        else mtxt.setText(R.string.start_text);
+        if (settings.contains(RUNNING_ID) != null) {
+            mIsRunning = settings.getBoolean(RUNNING_ID);
+        } else mIsRunning = false;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(RUNNING_ID,mIsRunning);
+        settings.putBoolean(RUNNING_ID,mIsRunning);
     }
 
     @Override
@@ -58,6 +60,52 @@ public class MapActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+        Log.d("MapActivity", "onStart() event");
+        if (mIsRunning) mtxt.setText(R.string.stop_text);
+        else mtxt.setText(R.string.start_text);
+    }
+
+    @Override
+    public void onPause()
+    {
+        Log.d("MapActivity", "onPause() event");
+        super.onPause();
+        if (mIsRunning) {
+            unregisterReceiver(alert);
+        }
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        settings = new settingRep(getApplicationContext());
+        if (settings.contains(RUNNING_ID) != null) {
+            mIsRunning = settings.getBoolean(RUNNING_ID);
+        } else mIsRunning = false;
+        Log.d("MapActivity", "onResumen() event " + mIsRunning);
+
+        if (mIsRunning) mtxt.setText(R.string.stop_text);
+        else mtxt.setText(R.string.start_text);
+        if (mIsRunning) registerReceiver(alert,new IntentFilter(LocationMonitor.LOCATION_MONITOR_ACTION));
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        Log.d("MapActivity", "onDestroy() event");
+        super.onDestroy();
+        if (mIsRunning) {
+            unregisterReceiver(alert);
+            //unregisterReceiver(lm);
+        }
+        settings.putBoolean(RUNNING_ID,false);
     }
 
     public void monitorClick(View v)
@@ -80,14 +128,26 @@ public class MapActivity extends ActionBarActivity {
                     alarmMgr.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 10 * 1000, alarmIntent);
 
                     registerReceiver(lm,new IntentFilter(LocationMonitor.LOCATION_MONITOR_ACTION));
+                    registerReceiver(alert,new IntentFilter(LocationMonitor.LOCATION_MONITOR_ACTION));
                     mIsRunning = true;
                     mtxt.setText(R.string.stop_text);
                 }
             }
         } else {
             mIsRunning = false;
-            unregisterReceiver(lm);
             mtxt.setText(R.string.start_text);
+            try {
+                unregisterReceiver(lm);
+            } catch (Exception e) {e.printStackTrace();}
         }
     }
+
+    private  BroadcastReceiver alert = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mIsRunning = false;
+            mtxt.setText(R.string.start_text);
+            unregisterReceiver(alert);
+        }
+    };
 }

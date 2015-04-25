@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.samsoft.treaviso.app.MapActivity;
 import com.samsoft.treaviso.app.R;
 
 import java.io.File;
@@ -34,6 +35,8 @@ public class LocationMonitor extends BroadcastReceiver {
                 boolean status = datos.getBoolean(LocationManager.KEY_PROXIMITY_ENTERING);
                 if (status) {
                     context.unregisterReceiver(this);
+                    settingRep setting = new settingRep(context.getApplicationContext());
+                    setting.putBoolean(MapActivity.RUNNING_ID,false);
                     makeNotification(context);
                 }
 

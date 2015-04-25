@@ -12,14 +12,14 @@
         android:name="com.samsoft.treaviso.app.Fragments.mapViewer"
         android:id="@+id/fragment"
         tools:layout="@layout/fragment_map_viewer"
-        android:layout_weight="9" />
+        android:layout_weight="1" />
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:background="#6e5b5dff"
-        android:layout_weight="1"
+        android:layout_height="50dp"
+        android:background="#d75b5dff"
+        android:layout_weight="0"
         android:clickable="true"
         android:onClick="monitorClick">
 
