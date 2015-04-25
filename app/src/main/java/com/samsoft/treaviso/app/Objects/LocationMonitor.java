@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.samsoft.treaviso.app.MapActivity;
 import com.samsoft.treaviso.app.R;
@@ -27,15 +28,18 @@ public class LocationMonitor extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent)
     {
+        settingRep setting = new settingRep(context.getApplicationContext());
+        /*setting.putBoolean(MapActivity.RUNNING_ID,false);
         makeNotification(context);
-        context.unregisterReceiver(this);
+        context.unregisterReceiver(this);*/
+
         Bundle datos = intent.getExtras();
         if (datos != null) {
             if (datos.containsKey(LocationManager.KEY_PROXIMITY_ENTERING)) {
                 boolean status = datos.getBoolean(LocationManager.KEY_PROXIMITY_ENTERING);
                 if (status) {
                     context.unregisterReceiver(this);
-                    settingRep setting = new settingRep(context.getApplicationContext());
+                    //settingRep setting = new settingRep(context.getApplicationContext());
                     setting.putBoolean(MapActivity.RUNNING_ID,false);
                     makeNotification(context);
                 }
@@ -46,7 +50,7 @@ public class LocationMonitor extends BroadcastReceiver {
 
     public void makeNotification(Context c)
     {
-        Intent main = new Intent(c, com.samsoft.treaviso.app.MainActivity.class);
+        Intent main = new Intent(c, MapActivity.class);
         main.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(c, 0, main,  PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -62,7 +66,7 @@ public class LocationMonitor extends BroadcastReceiver {
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(c.getApplicationContext());
         mBuilder.setSmallIcon(R.drawable.appicon);
-        mBuilder.setContentTitle("Llegando a destino");
+        mBuilder.setContentTitle("Llegando a destino ");
         mBuilder.setContentText("");
         mBuilder.setSound(soundUri);
         long[] vibrate = {0,500,110,500,110,450,110,200,110,170,40,450,110,200,110,170,40,500,2000,500,110,500,110,450,110,200,110,170,40,450,110,200,110,170,40,500};

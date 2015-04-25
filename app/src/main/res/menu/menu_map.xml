@@ -3,4 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.samsoft.treaviso.app.MapActivity">
 
+    <item
+        android:id="@+id/act_add"
+        android:orderInCategory="200"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_new"
+        android:title="@string/itm_add"/>
+
+    <item
+        android:id="@+id/act_service"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_play"
+        android:title="@string/itm_play"/>
+
+
+    <item android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:orderInCategory="400"
+        app:showAsAction="never" />
+
 </menu>

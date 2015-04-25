@@ -75,6 +75,7 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
         mPosition.setPosition(getLastLocation());
         mPosition.setDraggable(false);
         mPosition.setIcon(getResources().getDrawable(R.drawable.ic_marker_blue));
+        mPosition.setAnchor(0.5f,1f);
         map.getOverlays().add(mPosition);
         mMarker = null;
 
@@ -90,6 +91,7 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
                 mMarker.setPosition(new GeoPoint(savedInstanceState.getDouble(CLICKPOSITION_LAT_ID),savedInstanceState.getDouble(CLICKPOSITION_LNG_ID)));
                 mMarker.setDraggable(true);
                 mMarker.setIcon(getResources().getDrawable(R.drawable.ic_marker_red));
+                mPosition.setAnchor(0.5f,1f);
                 map.getOverlays().add(mMarker);
             }
             p = new GeoPoint(savedInstanceState.getDouble(CENTER_LAT_ID),savedInstanceState.getDouble(CENTER_LNG_ID));
@@ -234,6 +236,7 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
             mMarker.setPosition(p);
             mMarker.setDraggable(true);
             mMarker.setIcon(getResources().getDrawable(R.drawable.ic_marker_red));
+            mPosition.setAnchor(0.5f,1f);
             map.getOverlays().add(mMarker);
         } else {
             mMarker.setPosition(p);

@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.samsoft.treaviso.app.Fragments.mapViewer;
 import com.samsoft.treaviso.app.Objects.LocationMonitor;
@@ -28,12 +29,11 @@ public class MapActivity extends ActionBarActivity {
     private static LocationMonitor lm = new LocationMonitor();
     private TextView mtxt;
     private settingRep settings;
-
+    private Menu mMenu;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        mtxt = (TextView) findViewById(R.id.textView);
         settings = new settingRep(getApplicationContext());
         boolean hayDetalle =  (getSupportFragmentManager().findFragmentById(R.id.fragment) != null);
         if (hayDetalle) mapF = ((mapViewer)getSupportFragmentManager().findFragmentById(R.id.fragment));
@@ -53,12 +53,21 @@ public class MapActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_map, menu);
+        mMenu = menu;
+        if (mIsRunning) {
+            mMenu.findItem(R.id.act_service).setIcon(R.drawable.ic_action_stop);
+            mMenu.findItem(R.id.act_service).setTitle(R.string.stop_text);
+        } else {
+            mMenu.findItem(R.id.act_service).setIcon(R.drawable.ic_action_play);
+            mMenu.findItem(R.id.act_service).setTitle(R.string.start_text);
+        }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        if (id == R.id.act_service) monitorClick();
         return super.onOptionsItemSelected(item);
     }
 
@@ -67,8 +76,13 @@ public class MapActivity extends ActionBarActivity {
     {
         super.onStart();
         Log.d("MapActivity", "onStart() event");
-        if (mIsRunning) mtxt.setText(R.string.stop_text);
-        else mtxt.setText(R.string.start_text);
+        if (settings.contains(RUNNING_ID) != null) {
+            mIsRunning = settings.getBoolean(RUNNING_ID);
+        } else mIsRunning = false;
+
+        if (mIsRunning) {
+            registerReceiver(alert, new IntentFilter(LocationMonitor.LOCATION_MONITOR_ACTION));
+        }
     }
 
     @Override
@@ -85,15 +99,7 @@ public class MapActivity extends ActionBarActivity {
     public void onResume()
     {
         super.onResume();
-        settings = new settingRep(getApplicationContext());
-        if (settings.contains(RUNNING_ID) != null) {
-            mIsRunning = settings.getBoolean(RUNNING_ID);
-        } else mIsRunning = false;
-        Log.d("MapActivity", "onResumen() event " + mIsRunning);
-
-        if (mIsRunning) mtxt.setText(R.string.stop_text);
-        else mtxt.setText(R.string.start_text);
-        if (mIsRunning) registerReceiver(alert,new IntentFilter(LocationMonitor.LOCATION_MONITOR_ACTION));
+        Log.d("MapActivity", "onResumen() event ");
     }
 
     @Override
@@ -102,13 +108,15 @@ public class MapActivity extends ActionBarActivity {
         Log.d("MapActivity", "onDestroy() event");
         super.onDestroy();
         if (mIsRunning) {
-            unregisterReceiver(alert);
-            //unregisterReceiver(lm);
+            try {
+                unregisterReceiver(alert);
+                unregisterReceiver(lm);
+            } catch (Exception e) { e.printStackTrace();}
         }
         settings.putBoolean(RUNNING_ID,false);
     }
 
-    public void monitorClick(View v)
+    public void monitorClick()
     {
         Log.d("MapActivity","monitorClick");
         if (!mIsRunning) {
@@ -118,24 +126,31 @@ public class MapActivity extends ActionBarActivity {
                     double lat = b.getDouble(mapViewer.CLICKPOSITION_LAT_ID);
                     double lng = b.getDouble(mapViewer.CLICKPOSITION_LNG_ID);
                     Integer radius = b.getInt(mapViewer.RADIUS_ID);
-                    PendingIntent pi = PendingIntent.getBroadcast(this, 0, new Intent(LocationMonitor.LOCATION_MONITOR_ACTION), 0);
-                    LocationManager LM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                    //LM.addProximityAlert(lat,lng,radius.floatValue(),-1L,pi);
 
-                    AlarmManager alarmMgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+                    Intent i = new Intent(LocationMonitor.LOCATION_MONITOR_ACTION);
+                    PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, 0);
+                    LocationManager LM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+                    LM.addProximityAlert(lat,lng,radius.floatValue(),-1L,pi);
+
+                    /*AlarmManager alarmMgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
                     Intent intent = new Intent(LocationMonitor.LOCATION_MONITOR_ACTION);
                     PendingIntent alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-                    alarmMgr.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 10 * 1000, alarmIntent);
+                    alarmMgr.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 10 * 1000, alarmIntent);*/
 
                     registerReceiver(lm,new IntentFilter(LocationMonitor.LOCATION_MONITOR_ACTION));
                     registerReceiver(alert,new IntentFilter(LocationMonitor.LOCATION_MONITOR_ACTION));
                     mIsRunning = true;
-                    mtxt.setText(R.string.stop_text);
+                    mMenu.findItem(R.id.act_service).setIcon(R.drawable.ic_action_stop);
+                    mMenu.findItem(R.id.act_service).setTitle(R.string.stop_text);
+                } else {
+                    Toast.makeText(getApplicationContext(),R.string.noPoint,Toast.LENGTH_SHORT).show();
                 }
             }
         } else {
             mIsRunning = false;
-            mtxt.setText(R.string.start_text);
+            mMenu.findItem(R.id.act_service).setIcon(R.drawable.ic_action_play);
+            mMenu.findItem(R.id.act_service).setTitle(R.string.start_text);
             try {
                 unregisterReceiver(lm);
             } catch (Exception e) {e.printStackTrace();}
@@ -146,7 +161,8 @@ public class MapActivity extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             mIsRunning = false;
-            mtxt.setText(R.string.start_text);
+            mMenu.findItem(R.id.act_service).setIcon(R.drawable.ic_action_play);
+            mMenu.findItem(R.id.act_service).setTitle(R.string.start_text);
             unregisterReceiver(alert);
         }
     };
