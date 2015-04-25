@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,14 +35,14 @@ import java.util.List;
 
 
 public class mapViewer extends Fragment implements MapEventsReceiver , LocationListener , GeoSearch.onSearchListener {
-    private static final String MYPOSITION_LAT_ID = "MYPOSITION_LAT";
-    private static final String MYPOSITION_LNG_ID = "MYPOSITION_LNG";
-    private static final String CLICKPOSITION_LAT_ID = "CLICKPOSITION_LAT";
-    private static final String CLICKPOSITION_LNG_ID = "CLICKPOSITION_LNG";
-    private static final String CENTER_LAT_ID = "CENTER_LAT";
-    private static final String CENTER_LNG_ID = "CENTER_LNG";
-    private static final String RADIUS_ID = "RADIUS";
-    private static final String ZOOM_ID = "ZOOM";
+    public static final String MYPOSITION_LAT_ID = "MYPOSITION_LAT";
+    public static final String MYPOSITION_LNG_ID = "MYPOSITION_LNG";
+    public static final String CLICKPOSITION_LAT_ID = "CLICKPOSITION_LAT";
+    public static final String CLICKPOSITION_LNG_ID = "CLICKPOSITION_LNG";
+    public static final String CENTER_LAT_ID = "CENTER_LAT";
+    public static final String CENTER_LNG_ID = "CENTER_LNG";
+    public static final String RADIUS_ID = "RADIUS";
+    public static final String ZOOM_ID = "ZOOM";
 
     private MenuItem searchMenuItem;
     private Activity activity;
@@ -82,6 +83,7 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
         if (savedInstanceState == null) requestPosition();
         else {
             mPosition.setPosition(new GeoPoint(savedInstanceState.getDouble(MYPOSITION_LAT_ID),savedInstanceState.getDouble(MYPOSITION_LNG_ID)));
+            Log.d("MAPFRAG","Contiene: " + savedInstanceState.containsKey(CLICKPOSITION_LAT_ID));
             if (savedInstanceState.containsKey(CLICKPOSITION_LAT_ID))
             {
                 mMarker = new MarkerWithRadius(map);
@@ -146,8 +148,8 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle item selection
         switch (item.getItemId()) {
-            case R.id.act_search:
-
+            case R.id.act_locate:
+                mapCtl.animateTo(mPosition.getPosition());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -157,7 +159,7 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mMarker != null) {
+        /*if (mMarker != null) {
             outState.putDouble(CLICKPOSITION_LAT_ID, mMarker.getPosition().getLatitude());
             outState.putDouble(CLICKPOSITION_LNG_ID, mMarker.getPosition().getLongitude());
             outState.putInt(RADIUS_ID,mMarker.getRadius());
@@ -166,7 +168,25 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
         outState.putDouble(MYPOSITION_LNG_ID, mPosition.getPosition().getLongitude());
         outState.putDouble(CENTER_LAT_ID, map.getMapCenter().getLatitude());
         outState.putDouble(CENTER_LNG_ID, map.getMapCenter().getLongitude());
-        outState.putInt(ZOOM_ID,map.getZoomLevel());
+        outState.putInt(ZOOM_ID,map.getZoomLevel());*/
+        outState.putAll(getInfo());
+    }
+
+    public Bundle getInfo()
+    {
+        Bundle info = new Bundle();
+        if (mMarker != null) {
+            info.putDouble(CLICKPOSITION_LAT_ID, mMarker.getPosition().getLatitude());
+            info.putDouble(CLICKPOSITION_LNG_ID, mMarker.getPosition().getLongitude());
+            info.putInt(RADIUS_ID,mMarker.getRadius());
+        }
+        info.putDouble(MYPOSITION_LAT_ID, mPosition.getPosition().getLatitude());
+        info.putDouble(MYPOSITION_LNG_ID, mPosition.getPosition().getLongitude());
+        info.putDouble(CENTER_LAT_ID, map.getMapCenter().getLatitude());
+        info.putDouble(CENTER_LNG_ID, map.getMapCenter().getLongitude());
+        info.putInt(ZOOM_ID,map.getZoomLevel());
+        return info;
+
     }
 
     public void requestPosition()

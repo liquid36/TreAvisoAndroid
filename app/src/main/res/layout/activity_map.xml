@@ -8,8 +8,29 @@
 
     <fragment
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:name="com.samsoft.treaviso.app.Fragments.mapViewer"
         android:id="@+id/fragment"
-        tools:layout="@layout/fragment_map_viewer" />
+        tools:layout="@layout/fragment_map_viewer"
+        android:layout_weight="9" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:background="#6e5b5dff"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:onClick="monitorClick">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/start_text"
+            android:id="@+id/textView"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:textSize="30dp" />
+    </LinearLayout>
 </LinearLayout>
