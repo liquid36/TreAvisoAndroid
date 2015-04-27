@@ -1,6 +1,7 @@
 package com.samsoft.treaviso.app;
 
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -41,6 +42,8 @@ public class MapActivity extends ActionBarActivity {
         if (settings.contains(RUNNING_ID) != null) {
             mIsRunning = settings.getBoolean(RUNNING_ID);
         } else mIsRunning = false;
+
+
     }
 
     @Override
@@ -79,10 +82,11 @@ public class MapActivity extends ActionBarActivity {
         if (settings.contains(RUNNING_ID) != null) {
             mIsRunning = settings.getBoolean(RUNNING_ID);
         } else mIsRunning = false;
-
         if (mIsRunning) {
             registerReceiver(alert, new IntentFilter(LocationMonitor.LOCATION_MONITOR_ACTION));
         }
+        NotificationManager nM = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        nM.cancelAll();
     }
 
     @Override

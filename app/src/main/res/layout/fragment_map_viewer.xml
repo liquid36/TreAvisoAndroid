@@ -1,11 +1,31 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.samsoft.treaviso.app.Fragments.mapViewer">
 
-    <org.osmdroid.views.MapView
-        android:id="@+id/openmapview"
+
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
-</LinearLayout>
+        android:layout_height="fill_parent">
+
+        <org.osmdroid.views.MapView
+            android:id="@+id/openmapview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"/>
+
+    </LinearLayout>
+    <ImageButton android:id="@+id/floating_button"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_margin="10dp"
+        android:layout_gravity="right|bottom"
+        android:src="@drawable/tre_locate"
+        android:background="@drawable/laybackground"
+        android:scaleType="fitCenter"
+        android:padding="15dp"
+        android:clickable="true"
+        android:cropToPadding="false"  />
+
+</FrameLayout>

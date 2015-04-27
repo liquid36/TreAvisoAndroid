@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.samsoft.treaviso.app.Objects.GeoSearch;
 import com.samsoft.treaviso.app.Objects.MarkerWithRadius;
@@ -67,7 +68,6 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
         MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(getActivity().getApplicationContext(), this);
         map.getOverlays().add(0, mapEventsOverlay);
 
-
         // Creo el market con la position actual
         GeoPoint p = getLastLocation();
         Integer zoom = 13;
@@ -78,7 +78,12 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
         mPosition.setAnchor(0.5f,1f);
         map.getOverlays().add(mPosition);
         mMarker = null;
-
+        ((ImageButton) v.findViewById(R.id.floating_button)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                locateClick(view);
+            }
+        });
 
         // Lectura de viejas condiciones
         if (savedInstanceState == null) requestPosition();
@@ -151,6 +156,7 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
         // handle item selection
         switch (item.getItemId()) {
             case R.id.act_locate:
+                requestPosition();
                 mapCtl.animateTo(mPosition.getPosition());
                 return true;
             default:
@@ -161,16 +167,6 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        /*if (mMarker != null) {
-            outState.putDouble(CLICKPOSITION_LAT_ID, mMarker.getPosition().getLatitude());
-            outState.putDouble(CLICKPOSITION_LNG_ID, mMarker.getPosition().getLongitude());
-            outState.putInt(RADIUS_ID,mMarker.getRadius());
-        }
-        outState.putDouble(MYPOSITION_LAT_ID, mPosition.getPosition().getLatitude());
-        outState.putDouble(MYPOSITION_LNG_ID, mPosition.getPosition().getLongitude());
-        outState.putDouble(CENTER_LAT_ID, map.getMapCenter().getLatitude());
-        outState.putDouble(CENTER_LNG_ID, map.getMapCenter().getLongitude());
-        outState.putInt(ZOOM_ID,map.getZoomLevel());*/
         outState.putAll(getInfo());
     }
 
@@ -188,7 +184,12 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
         info.putDouble(CENTER_LNG_ID, map.getMapCenter().getLongitude());
         info.putInt(ZOOM_ID,map.getZoomLevel());
         return info;
+    }
 
+    public void locateClick(View v)
+    {
+        requestPosition();
+        mapCtl.animateTo(mPosition.getPosition());
     }
 
     public void requestPosition()
@@ -224,7 +225,6 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
     }
 
 
-
     /*
         MAP EVENTS HANDLER
 
@@ -257,6 +257,7 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
     @Override
     public void onLocationChanged(Location l) {
         mPosition.setPosition(new GeoPoint(l));
+        mapCtl.animateTo(new GeoPoint(l));
         map.invalidate();
     }
 

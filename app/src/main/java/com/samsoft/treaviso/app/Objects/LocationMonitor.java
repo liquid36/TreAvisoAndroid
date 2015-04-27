@@ -69,6 +69,7 @@ public class LocationMonitor extends BroadcastReceiver {
         mBuilder.setContentTitle("Llegando a destino ");
         mBuilder.setContentText("");
         mBuilder.setSound(soundUri);
+        mBuilder.setAutoCancel(true);
         long[] vibrate = {0,500,110,500,110,450,110,200,110,170,40,450,110,200,110,170,40,500,2000,500,110,500,110,450,110,200,110,170,40,450,110,200,110,170,40,500};
         mBuilder.setVibrate(vibrate);
         mBuilder.setContentIntent(pendingIntent);
