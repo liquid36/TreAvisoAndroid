@@ -19,7 +19,7 @@
     <ImageButton android:id="@+id/floating_button"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:layout_margin="10dp"
+        android:layout_margin="16dp"
         android:layout_gravity="right|bottom"
         android:src="@drawable/tre_locate"
         android:background="@drawable/laybackground"

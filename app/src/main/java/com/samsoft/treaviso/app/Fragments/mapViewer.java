@@ -155,10 +155,6 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle item selection
         switch (item.getItemId()) {
-            case R.id.act_locate:
-                requestPosition();
-                mapCtl.animateTo(mPosition.getPosition());
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -188,7 +184,7 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
 
     public void locateClick(View v)
     {
-        requestPosition();
+        //requestPosition();
         mapCtl.animateTo(mPosition.getPosition());
     }
 

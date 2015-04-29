@@ -11,11 +11,4 @@
         android:title="@string/itm_search"
         app:actionViewClass="android.support.v7.widget.SearchView"/>
 
-    <item
-        android:id="@+id/act_locate"
-        android:orderInCategory="51"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_action_locate"
-        android:title="@string/itm_locate"/>
-
 </menu>

@@ -18,32 +18,36 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.samsoft.treaviso.app.Dialogs.InputDialog;
 import com.samsoft.treaviso.app.Fragments.mapViewer;
+import com.samsoft.treaviso.app.Objects.DataBase;
 import com.samsoft.treaviso.app.Objects.LocationMonitor;
 import com.samsoft.treaviso.app.Objects.settingRep;
 
 
 public class MapActivity extends ActionBarActivity {
     public static final String RUNNING_ID = "RUNNING";
-    private mapViewer mapF;
+    private  mapViewer mapF;
     private boolean mIsRunning = false;
     private static LocationMonitor lm = new LocationMonitor();
     private TextView mtxt;
     private settingRep settings;
     private Menu mMenu;
+    private DataBase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         settings = new settingRep(getApplicationContext());
         boolean hayDetalle =  (getSupportFragmentManager().findFragmentById(R.id.fragment) != null);
-        if (hayDetalle) mapF = ((mapViewer)getSupportFragmentManager().findFragmentById(R.id.fragment));
+
+        mapF = ((mapViewer)getSupportFragmentManager().findFragmentById(R.id.fragment));
 
         if (settings.contains(RUNNING_ID) != null) {
             mIsRunning = settings.getBoolean(RUNNING_ID);
         } else mIsRunning = false;
-
-
+        db = new DataBase(getApplicationContext());
     }
 
     @Override
@@ -67,10 +71,45 @@ public class MapActivity extends ActionBarActivity {
         return true;
     }
 
+    public  Boolean isMarker()
+    {
+        Bundle info = mapF.getInfo();
+        if (info.containsKey(mapViewer.CLICKPOSITION_LAT_ID)) return true;
+        return false;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.act_service) monitorClick();
+        if (id == R.id.act_add) {
+            if (isMarker()) {
+                final mapViewer frag = mapF;
+                InputDialog dialog = new InputDialog(this, getString(R.string.txt_add_favorite), getString(R.string.txt_descripcion_input),
+                        new InputDialog.inputDialogListener() {
+                            @Override
+                            public void onAcceptClick(String txt) {
+                                if (txt.isEmpty()) {
+                                    Toast.makeText(getApplicationContext(), getString(R.string.txt_empty_txt), Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                Bundle info = frag.getInfo();
+                                Double lat = info.getDouble(mapViewer.CLICKPOSITION_LAT_ID);
+                                Double lng = info.getDouble(mapViewer.CLICKPOSITION_LNG_ID);
+                                Integer radius = info.getInt(mapViewer.RADIUS_ID);
+                                db.addFavorito(txt,lat,lng,radius);
+                            }
+
+                            @Override
+                            public void onCancelClick() {
+
+                            }
+                        });
+                dialog.show();
+            } else {
+                Toast.makeText(getApplicationContext(),getString(R.string.txt_no_click_yet),Toast.LENGTH_SHORT).show();
+            }
+        }
         return super.onOptionsItemSelected(item);
     }
 
