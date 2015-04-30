@@ -32,6 +32,10 @@
             android:label="@string/title_activity_map_viewer" >
         </activity>
         <activity
+            android:name=".favListActivity"
+            android:label="@string/title_activity_favlist" >
+        </activity>
+        <activity
             android:name="com.mburman.fileexplore.FileExplore"
             android:label="File Explorer" >
         </activity>

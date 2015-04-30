@@ -17,6 +17,11 @@
         android:icon="@drawable/ic_action_play"
         android:title="@string/itm_play"/>
 
+    <item android:id="@+id/action_favoritos"
+        android:title="@string/action_favoritos"
+        android:orderInCategory="350"
+        app:showAsAction="never" />
+
 
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"

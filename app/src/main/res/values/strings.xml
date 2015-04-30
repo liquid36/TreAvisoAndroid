@@ -21,6 +21,8 @@
     <string name="txt_add_favorite">Añadir favorito</string>
     <string name="txt_descripcion_input">Nombre</string>
     <string name="txt_no_click_yet">Marque destino en el mapa</string>
-    <string name="txt_empty_txt">Nombre Invalido</string>>
+    <string name="txt_empty_txt">Nombre Invalido</string>
+    <string name="action_favoritos">Favoritos</string>
+    <string name="title_activity_favlist">Favoritos</string>>
 
 </resources>

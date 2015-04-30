@@ -110,6 +110,10 @@ public class MapActivity extends ActionBarActivity {
                 Toast.makeText(getApplicationContext(),getString(R.string.txt_no_click_yet),Toast.LENGTH_SHORT).show();
             }
         }
+        if (id == R.id.action_favoritos)
+        {
+            startActivity(new Intent(this,favListActivity.class));
+        }
         return super.onOptionsItemSelected(item);
     }
 
