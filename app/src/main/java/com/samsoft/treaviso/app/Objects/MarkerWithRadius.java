@@ -106,6 +106,7 @@ public class MarkerWithRadius extends Overlay {
     public void setAnchor(float anchorU, float anchorV){
         mAnchorU = anchorU;
         mAnchorV= anchorV;
+        Log.d("MARKER", "Setting offsetX = " + mAnchorU + "offsetY = " +mAnchorV);
     }
 
     public void setAlpha(float alpha){
@@ -196,7 +197,8 @@ public class MarkerWithRadius extends Overlay {
         mIcon.setAlpha((int)(mAlpha*255));
 
         float rotationOnScreen = (mFlat ? -mBearing : mapView.getMapOrientation()-mBearing);
-        drawAt(canvas, mIcon, mPositionPixels.x, mPositionPixels.y, false, rotationOnScreen);
+        Log.d("MARKER", "offsetX = " + mAnchorU + "offsetY = " +mAnchorV);
+        drawAt(canvas, mIcon, mPositionPixels.x , mPositionPixels.y , false, rotationOnScreen);
 
         final float radius = mapView.getProjection().metersToEquatorPixels(mRadius);
         Paint mCirclePaint = new Paint();

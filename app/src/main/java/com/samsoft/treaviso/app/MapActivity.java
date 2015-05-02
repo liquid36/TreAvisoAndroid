@@ -24,9 +24,12 @@ import com.samsoft.treaviso.app.Objects.DataBase;
 import com.samsoft.treaviso.app.Objects.LocationMonitor;
 import com.samsoft.treaviso.app.Objects.settingRep;
 
+import org.json.JSONObject;
+
 
 public class MapActivity extends ActionBarActivity {
     public static final String RUNNING_ID = "RUNNING";
+    public static final String FROM_ID = "FROM_FAV";
     private  mapViewer mapF;
     private boolean mIsRunning = false;
     private static LocationMonitor lm = new LocationMonitor();
@@ -48,6 +51,15 @@ public class MapActivity extends ActionBarActivity {
             mIsRunning = settings.getBoolean(RUNNING_ID);
         } else mIsRunning = false;
         db = new DataBase(getApplicationContext());
+
+        Bundle b = getIntent().getExtras();
+        if (b != null && b.containsKey(FROM_ID)) {
+            try {
+                JSONObject o = new JSONObject(b.getString(FROM_ID));
+                mapF.setPoint(o.getDouble("lat"),o.getDouble("lng"),o.getInt("radius"));
+            } catch (Exception e) { e.printStackTrace();}
+
+        }
     }
 
     @Override
