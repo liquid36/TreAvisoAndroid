@@ -194,7 +194,7 @@ public class mapViewer extends Fragment implements MapEventsReceiver , LocationL
         } else {
             mMarker.setPosition(new GeoPoint(lat,lng));
         }
-        mapCtl.setCenter(new GeoPoint(lat,lng));
+        mapCtl.animateTo(new GeoPoint(lat,lng));
     }
 
     public Bundle getInfo()

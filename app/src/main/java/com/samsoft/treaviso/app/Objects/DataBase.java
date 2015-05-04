@@ -18,6 +18,13 @@ public class DataBase {
     private static final String TAG = "DataBase";
     private static final String NAME_DB = "TreAviso";
     private static final String TABLE_FAVORITOS = "favoritos";
+
+    public static final String ID = "id";
+    public static final String NAME_ID = "name";
+    public static final String LAT_ID = "lat";
+    public static final String LNG_ID = "lng";
+    public static final String RADIUS_ID = "radius";
+
     private Context context;
     private SQLiteDatabase db;
 
@@ -50,10 +57,10 @@ public class DataBase {
     {
         db.beginTransaction();
         ContentValues values = new ContentValues();
-        values.put("name",name);
-        values.put("lat",lat);
-        values.put("lng",lng);
-        values.put("radius",radius);
+        values.put(NAME_ID,name);
+        values.put(LAT_ID,lat);
+        values.put(LNG_ID,lng);
+        values.put(RADIUS_ID,radius);
         long id = db.insert(TABLE_FAVORITOS,null,values);
         db.setTransactionSuccessful();
         db.endTransaction();
@@ -76,11 +83,11 @@ public class DataBase {
             c = db.rawQuery("SELECT * FROM " + TABLE_FAVORITOS, new String[]{});
             while (c.moveToNext()) {
                 JSONObject o = new JSONObject();
-                o.put("id", c.getInt(0));
-                o.put("name", c.getString(1));
-                o.put("lat", c.getDouble(2));
-                o.put("lng", c.getDouble(3));
-                o.put("radius", c.getInt(4));
+                o.put(ID, c.getInt(0));
+                o.put(NAME_ID, c.getString(1));
+                o.put(LAT_ID, c.getDouble(2));
+                o.put(LNG_ID, c.getDouble(3));
+                o.put(RADIUS_ID, c.getInt(4));
                 arr.put(o);
             }
         } catch (Exception ee) {ee.printStackTrace();
@@ -98,11 +105,11 @@ public class DataBase {
             c = db.rawQuery("SELECT * FROM " + TABLE_FAVORITOS + "WHERE id = ?", new String[]{id.toString()});
             if (c.moveToNext()) {
                 o = new JSONObject();
-                o.put("id", c.getInt(0));
-                o.put("name", c.getString(1));
-                o.put("lat",c.getDouble(2));
-                o.put("lng",c.getDouble(3));
-                o.put("radius",c.getDouble(4));
+                o.put(ID, c.getInt(0));
+                o.put(NAME_ID, c.getString(1));
+                o.put(LAT_ID, c.getDouble(2));
+                o.put(LNG_ID, c.getDouble(3));
+                o.put(RADIUS_ID, c.getInt(4));
             }
         } catch (Exception ee) {ee.printStackTrace();
         } finally {

@@ -1,0 +1,25 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context="com.samsoft.treaviso.app.MapActivity">
+
+
+    <fragment
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:name="com.samsoft.treaviso.app.Fragments.favoriteList"
+        android:id="@+id/fragmentList"
+        tools:layout="@layout/fragment_map_viewer"
+        android:layout_weight="1" />
+
+    <fragment
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:name="com.samsoft.treaviso.app.Fragments.mapViewer"
+        android:id="@+id/fragment"
+        tools:layout="@layout/fragment_map_viewer"
+        android:layout_weight="3" />
+
+</LinearLayout>

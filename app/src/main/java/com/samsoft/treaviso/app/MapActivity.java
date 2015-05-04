@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.samsoft.treaviso.app.Dialogs.InputDialog;
+import com.samsoft.treaviso.app.Fragments.favoriteList;
 import com.samsoft.treaviso.app.Fragments.mapViewer;
 import com.samsoft.treaviso.app.Objects.DataBase;
 import com.samsoft.treaviso.app.Objects.LocationMonitor;
@@ -27,7 +28,7 @@ import com.samsoft.treaviso.app.Objects.settingRep;
 import org.json.JSONObject;
 
 
-public class MapActivity extends ActionBarActivity {
+public class MapActivity extends ActionBarActivity implements favoriteList.favoriteListListener {
     public static final String RUNNING_ID = "RUNNING";
     public static final String FROM_ID = "FROM_FAV";
     private  mapViewer mapF;
@@ -56,10 +57,13 @@ public class MapActivity extends ActionBarActivity {
         if (b != null && b.containsKey(FROM_ID)) {
             try {
                 JSONObject o = new JSONObject(b.getString(FROM_ID));
-                mapF.setPoint(o.getDouble("lat"),o.getDouble("lng"),o.getInt("radius"));
-            } catch (Exception e) { e.printStackTrace();}
-
+                mapF.setPoint(o.getDouble(DataBase.LAT_ID), o.getDouble(DataBase.LNG_ID), o.getInt(DataBase.RADIUS_ID));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            getIntent().removeExtra(FROM_ID);
         }
+
     }
 
     @Override
@@ -79,6 +83,21 @@ public class MapActivity extends ActionBarActivity {
         } else {
             mMenu.findItem(R.id.act_service).setIcon(R.drawable.ic_action_play);
             mMenu.findItem(R.id.act_service).setTitle(R.string.start_text);
+        }
+        return true;
+
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu (Menu menu)
+    {
+        favoriteList hayList =  (favoriteList) getSupportFragmentManager().findFragmentById(R.id.fragmentList);
+        if (hayList != null && hayList.isVisible()) {
+            Log.d("MapActivity","esta FragmentList");
+            menu.findItem(R.id.action_favoritos).setVisible(false);
+        } else {
+            Log.d("MapActivity","NO ESTA FragmentList");
+            menu.findItem(R.id.action_favoritos).setVisible(true);
         }
         return true;
     }
@@ -110,6 +129,10 @@ public class MapActivity extends ActionBarActivity {
                                 Double lng = info.getDouble(mapViewer.CLICKPOSITION_LNG_ID);
                                 Integer radius = info.getInt(mapViewer.RADIUS_ID);
                                 db.addFavorito(txt,lat,lng,radius);
+                                favoriteList hayList =  (favoriteList) getSupportFragmentManager().findFragmentById(R.id.fragmentList);
+                                if (hayList != null) {
+                                    hayList.refreshScreen();
+                                }
                             }
 
                             @Override
@@ -142,6 +165,7 @@ public class MapActivity extends ActionBarActivity {
         }
         NotificationManager nM = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         nM.cancelAll();
+
     }
 
     @Override
@@ -214,6 +238,13 @@ public class MapActivity extends ActionBarActivity {
                 unregisterReceiver(lm);
             } catch (Exception e) {e.printStackTrace();}
         }
+    }
+
+    public void onFavoriteClick(JSONObject id)
+    {
+        try {
+            mapF.setPoint(id.getDouble(DataBase.LAT_ID),id.getDouble(DataBase.LNG_ID),id.getInt(DataBase.RADIUS_ID));
+        }catch (Exception e) {e.printStackTrace();}
     }
 
     private  BroadcastReceiver alert = new BroadcastReceiver() {

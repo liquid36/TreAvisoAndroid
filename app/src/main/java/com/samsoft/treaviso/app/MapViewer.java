@@ -23,10 +23,13 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
+import com.samsoft.treaviso.app.Fragments.favoriteList;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONObject;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.overlays.MapEventsOverlay;
@@ -59,7 +62,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
-public class MapViewer extends ActionBarActivity {
+public class MapViewer extends ActionBarActivity implements favoriteList.favoriteListListener{
     private MapView myOpenMapView;
     private IMapController mapController;
     private double lat,lon;
@@ -165,6 +168,11 @@ public class MapViewer extends ActionBarActivity {
         }
     }
 
+    public void onFavoriteClick(JSONObject id)
+    {
+
+    }
+
     public class MapOverlay extends ItemizedOverlayWithFocus <OverlayItem> {
         private ItemizedOverlayWithFocus<OverlayItem> anotherItemizedIconOverlay = null;
 
@@ -198,6 +206,7 @@ public class MapViewer extends ActionBarActivity {
                 }
             }
         }
+
 
 
         @Override

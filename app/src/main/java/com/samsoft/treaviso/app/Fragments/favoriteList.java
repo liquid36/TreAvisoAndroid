@@ -64,6 +64,12 @@ public class favoriteList extends ListFragment {
             try {madapter.add(arr.getJSONObject(i));} catch (Exception e) {e.printStackTrace();}
     }
 
+    public void refreshScreen()
+    {
+        recalcularAdapter();
+        madapter.notifyDataSetChanged();
+    }
+
 
     @Override
     public void onAttach(Activity activity) {
